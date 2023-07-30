@@ -11,20 +11,24 @@ async function createClient() {
 	return auth0Client;
 }
 
-async function checkAuth(client: Auth0Client) {
-	loading.set(true);
-	client.isAuthenticated().then((isAuth) => {
-		isAuthenticated.set(isAuth);
-		if (isAuth) {
-			client.getUser().then((usr) => {
-				if (usr) {
-					user.set(usr);
-				}
+function checkAuth(client: Auth0Client): Promise<boolean> {
+	return new Promise((resolve) => {
+		loading.set(true);
+		client.isAuthenticated().then((isAuth) => {
+			isAuthenticated.set(isAuth);
+			if (isAuth) {
+				client.getUser().then((usr) => {
+					if (usr) {
+						user.set(usr);
+					}
+					loading.set(false);
+					resolve(true);
+				});
+			} else {
 				loading.set(false);
-			});
-		} else {
-			loading.set(false);
-		}
+				resolve(false);
+			}
+		});
 	});
 }
 

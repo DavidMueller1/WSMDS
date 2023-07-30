@@ -6,6 +6,7 @@
 	import { Auth0Client, User } from '@auth0/auth0-spa-js';
 	import { onMount } from 'svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
+	import { initWebSocket } from '../websocketService';
 
 	let auth0Client: Auth0Client;
 
@@ -13,7 +14,11 @@
 		loading.set(true);
 
 		auth0Client = await auth.createClient();
-		auth.checkAuth(auth0Client);
+		auth.checkAuth(auth0Client).then(isAuth => {
+			if (isAuth) {
+				initWebSocket();
+			}
+		});
 	});
 
 	function login() {
