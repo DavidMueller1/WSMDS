@@ -15,7 +15,7 @@
 		<div>{ $user.name }</div>
 		<button class='button-logout' on:click={logout}>Logout</button>
 	{:else }
-		<div>HEADER</div>
+		<div>WSMDS</div>
 	{/if}
 </header>
 

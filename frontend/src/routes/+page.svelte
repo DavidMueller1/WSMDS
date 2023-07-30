@@ -1,6 +1,9 @@
 <script lang="ts">
+	let code = '';
 
-import { user } from '../store';
+	const submitCode = () => {
+		console.log('Submitting code:', code);
+	}
 </script>
 
 <svelte:head>
@@ -8,7 +11,10 @@ import { user } from '../store';
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<h2>Welcome, {$user.name}</h2>
+<div class='connect-form center-flex'>
+	<input bind:value={code} placeholder='Code'/>
+	<button on:click={submitCode}>Connect</button>
+</div>
 
 <style>
 </style>

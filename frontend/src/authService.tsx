@@ -1,5 +1,5 @@
 import { Auth0Client, createAuth0Client, PopupLoginOptions, User } from '@auth0/auth0-spa-js';
-import { user, isAuthenticated, popupOpen, loadingAuth } from './store';
+import { user, isAuthenticated, popupOpen, loading } from './store';
 import auth0Config from './auth0.config';
 
 async function createClient() {
@@ -12,7 +12,7 @@ async function createClient() {
 }
 
 async function checkAuth(client: Auth0Client) {
-	loadingAuth.set(true);
+	loading.set(true);
 	client.isAuthenticated().then((isAuth) => {
 		isAuthenticated.set(isAuth);
 		if (isAuth) {
@@ -20,10 +20,10 @@ async function checkAuth(client: Auth0Client) {
 				if (usr) {
 					user.set(usr);
 				}
-				loadingAuth.set(false);
+				loading.set(false);
 			});
 		} else {
-			loadingAuth.set(false);
+			loading.set(false);
 		}
 	});
 }
@@ -44,7 +44,7 @@ async function loginWithPopup(client: Auth0Client, options: PopupLoginOptions) {
 }
 
 function logout(client: Auth0Client) {
-	return client.logout();
+	return client.logout({ logoutParams: { returnTo: window.location.origin } });
 }
 
 const auth = {
