@@ -1,5 +1,6 @@
 console.log('store.tsx');
-const serverUrl = 'wss://socketsbay.com/wss/v2/1/demo/';
+// const serverUrl = 'wss://socketsbay.com/wss/v2/1/demo/';
+const serverUrl = 'ws://localhost:8080/';
 let socket: WebSocket;
 
 export const initWebSocket = () => {

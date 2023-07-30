@@ -36,6 +36,7 @@
 	"dependencies": {
 		"@auth0/auth0-spa-js": "^2.1.1",
 		"@types/node": "^20.4.5",
+		"dotenv": "^16.3.1",
 		"websocket": "^1.0.34"
 	}
 }

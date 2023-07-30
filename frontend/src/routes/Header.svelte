@@ -1,6 +1,6 @@
 <script>
 	import './Header.scss'
-	import { isAuthenticated, user } from '../store';
+	import { isAuthenticated, user, wsmdsUser } from '../store';
 	import auth from '../authService';
 
 	export let auth0Client;
@@ -12,7 +12,11 @@
 
 <header>
 	{#if $isAuthenticated && $user}
-		<div>{ $user.name }</div>
+		{#if $wsmdsUser}
+			<div>{ $wsmdsUser.name }</div>
+		{:else }
+			<div>{ $user.name }</div>
+		{/if}
 		<button class='button-logout' on:click={logout}>Logout</button>
 	{:else }
 		<div>WSMDS</div>

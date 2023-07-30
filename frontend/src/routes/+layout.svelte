@@ -1,12 +1,13 @@
 <script lang="ts">
 	import Header from './Header.svelte';
 	import './global.scss';
-	import auth from "../authService";
-	import { isAuthenticated, loading, user } from '../store';
+	import auth from '../authService';
+	import { auth0Token, isAuthenticated, loading, user, wsmdsUser } from '../store';
 	import { Auth0Client, User } from '@auth0/auth0-spa-js';
 	import { onMount } from 'svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import { initWebSocket } from '../websocketService';
+	import Welcome from './Welcome.svelte';
 
 	let auth0Client: Auth0Client;
 
@@ -16,7 +17,12 @@
 		auth0Client = await auth.createClient();
 		auth.checkAuth(auth0Client).then(isAuth => {
 			if (isAuth) {
-				initWebSocket();
+				// initWebSocket();
+				auth.getUserProfile(auth0Client, $auth0Token).then(() => {
+					loading.set(false);
+				})
+			} else {
+				loading.set(false);
 			}
 		});
 	});
@@ -42,10 +48,14 @@
 			</span>
 		{:else }
 			{#if $isAuthenticated && $user}
-				<slot />
+				{#if $wsmdsUser}
+					<slot />
+				{:else }
+					<Welcome auth0Client={auth0Client} />
+				{/if}
 			{:else}
 				<div class='no-auth center-flex'>
-					<div>Du musst eingeloggt sein</div>
+					<div>Log dich bitte ein, damit ich weiß wer du bist</div>
 					<button on:click={login}>Login</button>
 				</div>
 			{/if}

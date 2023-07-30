@@ -15,6 +15,3 @@
 	<input bind:value={code} placeholder='Code'/>
 	<button on:click={submitCode}>Connect</button>
 </div>
-
-<style>
-</style>
