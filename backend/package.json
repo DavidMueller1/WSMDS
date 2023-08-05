@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc && node dist/app.js",
+    "dev": "npm run build && node dist/app.js",
     "serveo": "ssh -R wsmds.serveo.net:80:localhost:8000 serveo.net\n"
   },
   "keywords": [],
