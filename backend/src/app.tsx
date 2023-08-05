@@ -5,10 +5,22 @@ import { auth } from 'express-oauth2-jwt-bearer'
 import jwt from 'jsonwebtoken'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-
+import ngrok from 'ngrok'
 // import { expressjwt, GetVerificationKey } from 'express-jwt'
 // import { expressJwtSecret } from 'jwks-rsa'
 import { auth0Config } from './auth0Config'
+import * as https from 'https'
+import * as fs from 'fs'
+import { readFileSync } from 'fs'
+import { throwExpression } from './utils'
+import { Logger } from './logger'
+
+const NGROK_AUTH_TOKEN =
+    process.env.NGROK_AUTH_TOKEN ??
+    throwExpression('NGROK_AUTH_TOKEN is undefined in environment variables')
+
+// Cast to int
+const PORT = +(process.env.PORT ?? throwExpression('PORT is undefined in environment variables'))
 
 // Simple Websocket server that returns the current time every second
 const wss = new WebSocket.Server({ port: 8080 })
@@ -30,19 +42,6 @@ const jwtCheck = auth({
 
 const db = new Db()
 
-// const jwtCheck = expressjwt({
-//     secret: expressJwtSecret({
-//         cache: true,
-//         rateLimit: true,
-//         jwksRequestsPerMinute: 5,
-//         jwksUri: `https://${auth0Config.domain}`,
-//     }) as GetVerificationKey,
-//     audience: auth0Config.audience,
-//     issuer: auth0Config.issuer,
-//     algorithms: auth0Config.algorithms,
-// })
-
-const port = process.env.PORT
 app.get('/', (req: Request, res: Response) => {
     res.send('Express + TypeScript Serverrr')
     console.log('Express + TypeScript Serverrr')
@@ -82,8 +81,49 @@ app.post('/api/profile', jwtCheck, (req: Request, res: Response) => {
     )
 })
 
-db.init().then(() => {
-    app.listen(port, () => {
-        console.log(`⚡️[server]: Server is runnnning at http://localhost:${port}`)
+app.put('/api/profile/name', jwtCheck, (req: Request, res: Response) => {
+    Logger.express('put /api/profile/name')
+    const decoded = jwt.decode(req.headers.authorization?.split(' ')[1] as string)
+    const sub = decoded?.sub as string
+    const name = req.body.userName as string
+    db.changeUserName(sub, name).then(
+        (user) => {
+            res.status(200).send(user)
+        },
+        (err) => {
+            res.status(500).send(err)
+        },
+    )
+})
+
+// Connect to ngrok
+const connectNgrok = () => {
+    return new Promise<string>((resolve) => {
+        ngrok.authtoken(NGROK_AUTH_TOKEN).then(() => {
+            Logger.express('Auth ngrok successful')
+            ngrok.connect(PORT).then((backendUrl) => {
+                Logger.express('Ngrok connected')
+                Logger.express('Online address: ' + backendUrl)
+                resolve(backendUrl)
+            })
+        })
     })
+}
+
+db.init().then(() => {
+    app.listen(PORT, () => {
+        Logger.express(`Server is runnnning at http://localhost:${PORT}`)
+        // connectNgrok().then((backendUrl) => {})
+    })
+    // https
+    //     .createServer(
+    //         {
+    //             key: readFileSync('cert/server.key'),
+    //             cert: readFileSync('cert/server.cert'),
+    //         },
+    //         app,
+    //     )
+    //     .listen(port, () => {
+    //         console.log(`⚡️[server]: Server is runnnning at http://localhost:${port}`)
+    //     })
 })

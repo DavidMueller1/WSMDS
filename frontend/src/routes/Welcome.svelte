@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { auth0Token, user } from '../store';
+	import { auth0Client, auth0Token, user } from '../store';
 	import auth from '../authService';
 
-	export let auth0Client;
 
 	let name = $user?.name;
 
 	const submitName = () => {
 		console.log('Submitting name:', name);
-		auth.createProfile(auth0Client, $auth0Token, name)
+		auth.createProfile($auth0Client, $auth0Token, name)
 	}
 </script>
 

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc && node dist/app.js"
+    "dev": "npx tsc && node dist/app.js",
+    "serveo": "ssh -R wsmds.serveo.net:80:localhost:8000 serveo.net\n"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "express-oauth2-jwt-bearer": "^1.5.0",
     "jwks-rsa": "^3.0.1",
     "mongodb": "^5.7.0",
+    "ngrok": "^5.0.0-beta.2",
     "ws": "^8.13.0"
   },
   "devDependencies": {

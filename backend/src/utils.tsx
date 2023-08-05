@@ -10,3 +10,7 @@ export const decodeToken = (token: string | undefined) => {
     }
     return undefined
 }
+
+export const throwExpression = (errorMessage: string): never => {
+    throw new Error(errorMessage)
+}

@@ -1,5 +1,6 @@
 import { Collection, MongoClient } from 'mongodb'
 import { ATLAS_URL } from './environmentVariables'
+import { Logger } from './logger'
 
 // Data class for user
 export interface User {
@@ -15,15 +16,16 @@ export class Db {
     constructor() {}
 
     init = () => {
+        Logger.database('Connecting to database...')
         return new Promise<void>((resolve) => {
             this.dbClient.connect().then(
                 () => {
-                    console.log('Connected to database')
+                    Logger.database('Connected to database')
                     this.userCollection = this.dbClient.db('WSMDS').collection('users')
                     resolve()
                 },
                 (err) => {
-                    console.log('Could not connect to database')
+                    Logger.error('Could not connect to database')
                     console.log(err)
                     throw new Error('Could not connect to database')
                 },
@@ -35,8 +37,8 @@ export class Db {
         return new Promise<User>((resolve, reject) => {
             this.userCollection?.findOne({ userId: userId }).then((res) => {
                 if (res) {
-                    console.log('User found')
-                    console.log(res)
+                    Logger.database('User found')
+                    Logger.database(res)
                     resolve({
                         userId: res.userId,
                         userName: res.userName,
@@ -59,12 +61,29 @@ export class Db {
                 })
                 .then((res) => {
                     if (res.acknowledged) {
-                        console.log('User added')
+                        Logger.database('User added')
                         this.getUser(userId).then((user) => {
                             resolve(user)
                         })
                     } else {
                         reject(new Error('User could not be added'))
+                    }
+                })
+        })
+    }
+
+    changeUserName = (userId: string, userName: string) => {
+        return new Promise<User>((resolve, reject) => {
+            this.userCollection
+                ?.updateOne({ userId: userId }, { $set: { userName: userName } })
+                .then((res) => {
+                    if (res.acknowledged) {
+                        Logger.database('User name changed')
+                        this.getUser(userId).then((user) => {
+                            resolve(user)
+                        })
+                    } else {
+                        reject(new Error('User name could not be changed'))
                     }
                 })
         })

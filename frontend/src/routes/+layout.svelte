@@ -2,23 +2,23 @@
 	import Header from './Header.svelte';
 	import './global.scss';
 	import auth from '../authService';
-	import { auth0Token, isAuthenticated, loading, user, wsmdsUser } from '../store';
+	import { auth0Client, auth0Token, isAuthenticated, loading, user, wsmdsUser } from '../store';
 	import { Auth0Client, User } from '@auth0/auth0-spa-js';
 	import { onMount } from 'svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import { initWebSocket } from '../websocketService';
 	import Welcome from './Welcome.svelte';
 
-	let auth0Client: Auth0Client;
+	// let auth0Client: Auth0Client;
 
 	onMount(async () => {
 		loading.set(true);
 
-		auth0Client = await auth.createClient();
-		auth.checkAuth(auth0Client).then(isAuth => {
+		auth0Client.set(await auth.createClient());
+		auth.checkAuth($auth0Client).then(isAuth => {
 			if (isAuth) {
 				// initWebSocket();
-				auth.getUserProfile(auth0Client, $auth0Token).then(() => {
+				auth.getUserProfile($auth0Client, $auth0Token).then(() => {
 					loading.set(false);
 				})
 			} else {
@@ -28,12 +28,12 @@
 	});
 
 	function login() {
-		auth.loginWithPopup(auth0Client, {});
+		auth.loginWithPopup($auth0Client, {});
 	}
 </script>
 
 <div class="app">
-	<Header auth0Client={auth0Client} />
+	<Header />
 
 	<div class='content'>
 		{#if $loading}
@@ -51,7 +51,7 @@
 				{#if $wsmdsUser}
 					<slot />
 				{:else }
-					<Welcome auth0Client={auth0Client} />
+					<Welcome />
 				{/if}
 			{:else}
 				<div class='no-auth center-flex'>

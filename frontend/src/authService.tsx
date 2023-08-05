@@ -1,9 +1,25 @@
 import { Auth0Client, createAuth0Client, PopupLoginOptions } from '@auth0/auth0-spa-js';
 import { auth0Token, isAuthenticated, loading, popupOpen, user, wsmdsUser } from './store';
 import auth0Config from './auth0.config';
+// @ts-ignore
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
+// import * as https from 'https';
+// import { fetch, Agent } from 'undici';
 // Import environment variables
 // import dotenv from 'dotenv';
 // dotenv.config();
+
+// const BACKEND_URL = process.env.BACKEND_URL;
+
+// const BACKEND_URL = 'http://localhost:8000';
+// const BACKEND_URL = 'http://192.168.179.1:8000';
+// const BACKEND_URL = 'https://192.168.179.1:8000';
+
+// const agent = new Agent({
+// 	connect: {
+// 		rejectUnauthorized: false
+// 	}
+// });
 
 async function createClient() {
 	return await createAuth0Client({
@@ -38,7 +54,6 @@ function checkAuth(client: Auth0Client): Promise<boolean> {
 }
 
 async function loginWithPopup(client: Auth0Client, options: PopupLoginOptions) {
-	console.log('loginWithPopup');
 	popupOpen.set(true);
 	try {
 		client.loginWithPopup(options).then(() => {
@@ -58,15 +73,14 @@ function logout(client: Auth0Client) {
 
 const getUserProfile = (client: Auth0Client, token: string): Promise<void> => {
 	return new Promise<void>((resolve) => {
-		fetch(`http://localhost:8000/api/profile`, {
+		fetch(`${PUBLIC_BACKEND_URL}/api/profile`, {
 			method: 'GET',
 			headers: {
 				authorization: `Bearer ${token}`
 			}
 		}).then((res) => {
 			if (res.ok) {
-				res.json().then((profile) => {
-					console.log('profile: ', profile);
+				res.json().then((profile: any) => {
 					wsmdsUser.set({
 						id: profile.userId,
 						name: profile.userName,
@@ -83,8 +97,9 @@ const getUserProfile = (client: Auth0Client, token: string): Promise<void> => {
 
 const createProfile = (client: Auth0Client, token: string, userName: string): Promise<void> => {
 	return new Promise<void>((resolve) => {
-		fetch(`http://localhost:8000/api/profile`, {
+		fetch(`${PUBLIC_BACKEND_URL}/api/profile`, {
 			method: 'POST',
+			mode: 'cors',
 			headers: {
 				authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'
@@ -94,8 +109,36 @@ const createProfile = (client: Auth0Client, token: string, userName: string): Pr
 			})
 		}).then((res) => {
 			if (res.ok) {
-				res.json().then((profile) => {
-					console.log('profile: ', profile);
+				res.json().then((profile: any) => {
+					wsmdsUser.set({
+						id: profile.userId,
+						name: profile.userName,
+						role: profile.role
+					});
+					resolve();
+				});
+			} else {
+				resolve();
+			}
+		});
+	});
+};
+
+const updateUserName = (client: Auth0Client, token: string, userName: string): Promise<void> => {
+	return new Promise<void>((resolve) => {
+		fetch(`${PUBLIC_BACKEND_URL}/api/profile/name`, {
+			method: 'PUT',
+			mode: 'cors',
+			headers: {
+				authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				userName: userName
+			})
+		}).then((res) => {
+			if (res.ok) {
+				res.json().then((profile: any) => {
 					wsmdsUser.set({
 						id: profile.userId,
 						name: profile.userName,
@@ -116,7 +159,8 @@ const auth = {
 	checkAuth,
 	getUserProfile,
 	loginWithPopup,
-	logout
+	logout,
+	updateUserName
 };
 
 export default auth;

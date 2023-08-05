@@ -1,5 +1,5 @@
 header {
-  padding: 8px;
+  padding: 8px 16px;
   background: #144b52;
   display: flex;
   flex-direction: row;
@@ -10,6 +10,6 @@ header {
   box-sizing: border-box;
 }
 
-.button-logout {
+.user-name {
   margin-left: auto;
 }
