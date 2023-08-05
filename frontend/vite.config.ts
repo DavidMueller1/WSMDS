@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd());
-	if (env.PRODUCTION)
+	if (!env.PRODUCTION)
 		return {
 			plugins: [sveltekit()]
 		};
