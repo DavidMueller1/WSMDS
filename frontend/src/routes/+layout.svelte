@@ -16,20 +16,25 @@
 
 		auth0Client.set(await auth.createClient());
 		auth.checkAuth($auth0Client).then(isAuth => {
-			if (isAuth) {
-				// initWebSocket();
-				auth.getUserProfile($auth0Client, $auth0Token).then(() => {
-					loading.set(false);
-				})
-			} else {
-				loading.set(false);
-			}
+			loading.set(false);
+			// if (isAuth) {
+			// 	// initWebSocket();
+			// 	auth.getUserProfile($auth0Client, $auth0Token).then(() => {
+			// 		loading.set(false);
+			// 	})
+			// } else {
+			// 	loading.set(false);
+			// }
 		});
 	});
 
-	function login() {
-		auth.loginWithPopup($auth0Client, {});
+	const login = () => {
+		loading.set(true);
+		auth.loginWithPopup($auth0Client, {}).then(() => {
+			loading.set(false);
+		});
 	}
+
 </script>
 
 <div class="app">

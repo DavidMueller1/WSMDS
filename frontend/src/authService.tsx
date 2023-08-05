@@ -1,5 +1,13 @@
 import { Auth0Client, createAuth0Client, PopupLoginOptions } from '@auth0/auth0-spa-js';
-import { auth0Token, isAuthenticated, loading, popupOpen, user, wsmdsUser } from './store';
+import {
+	auth0Client,
+	auth0Token,
+	isAuthenticated,
+	loading,
+	popupOpen,
+	user,
+	wsmdsUser
+} from './store';
 import auth0Config from './auth0.config';
 // @ts-ignore
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
@@ -43,7 +51,9 @@ function checkAuth(client: Auth0Client): Promise<boolean> {
 					}
 					client.getTokenSilently().then((token) => {
 						auth0Token.set(token);
-						resolve(true);
+						getUserProfile(client, token).then(() => {
+							resolve(true);
+						});
 					});
 				});
 			} else {
@@ -53,18 +63,32 @@ function checkAuth(client: Auth0Client): Promise<boolean> {
 	});
 }
 
-async function loginWithPopup(client: Auth0Client, options: PopupLoginOptions) {
+async function loginWithPopup(client: Auth0Client, options: PopupLoginOptions): Promise<void> {
 	popupOpen.set(true);
-	try {
-		client.loginWithPopup(options).then(() => {
-			checkAuth(client);
-		});
-	} catch (e) {
-		// eslint-disable-next-line
-		console.error(e);
-	} finally {
-		popupOpen.set(false);
-	}
+	return new Promise((resolve, reject) => {
+		client.loginWithPopup(options).then(
+			() => {
+				checkAuth(client).then(() => {
+					resolve();
+				});
+			},
+			(e) => {
+				reject(e);
+			}
+		);
+	});
+	// try {
+	// 	client.loginWithPopup(options).then(() => {
+	// 		checkAuth(client).then(() => {
+	//
+	// 		});
+	// 	});
+	// } catch (e) {
+	// 	// eslint-disable-next-line
+	// 	console.error(e);
+	// } finally {
+	// 	popupOpen.set(false);
+	// }
 }
 
 function logout(client: Auth0Client) {

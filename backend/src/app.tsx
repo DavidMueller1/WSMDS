@@ -96,34 +96,8 @@ app.put('/api/profile/name', jwtCheck, (req: Request, res: Response) => {
     )
 })
 
-// Connect to ngrok
-const connectNgrok = () => {
-    return new Promise<string>((resolve) => {
-        ngrok.authtoken(NGROK_AUTH_TOKEN).then(() => {
-            Logger.express('Auth ngrok successful')
-            ngrok.connect(PORT).then((backendUrl) => {
-                Logger.express('Ngrok connected')
-                Logger.express('Online address: ' + backendUrl)
-                resolve(backendUrl)
-            })
-        })
-    })
-}
-
 db.init().then(() => {
     app.listen(PORT, () => {
         Logger.express(`Server is runnnning at http://localhost:${PORT}`)
-        // connectNgrok().then((backendUrl) => {})
     })
-    // https
-    //     .createServer(
-    //         {
-    //             key: readFileSync('cert/server.key'),
-    //             cert: readFileSync('cert/server.cert'),
-    //         },
-    //         app,
-    //     )
-    //     .listen(port, () => {
-    //         console.log(`⚡️[server]: Server is runnnning at http://localhost:${port}`)
-    //     })
 })
