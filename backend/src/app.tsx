@@ -15,10 +15,6 @@ import { readFileSync } from 'fs'
 import { throwExpression } from './utils'
 import { Logger } from './logger'
 
-const NGROK_AUTH_TOKEN =
-    process.env.NGROK_AUTH_TOKEN ??
-    throwExpression('NGROK_AUTH_TOKEN is undefined in environment variables')
-
 // Cast to int
 const PORT = +(process.env.PORT ?? throwExpression('PORT is undefined in environment variables'))
 
