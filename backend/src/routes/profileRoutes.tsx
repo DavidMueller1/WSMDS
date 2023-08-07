@@ -1,6 +1,5 @@
-import { Application, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { getNamespace } from 'continuation-local-storage'
 import { Db } from '../db'
 import { Logger } from '../logger'
 
