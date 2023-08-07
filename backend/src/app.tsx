@@ -2,18 +2,12 @@ import express, { Express, Request, Response } from 'express'
 import { Db } from './db'
 import WebSocket from 'ws'
 import { auth } from 'express-oauth2-jwt-bearer'
-import jwt from 'jsonwebtoken'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import ngrok from 'ngrok'
-// import { expressjwt, GetVerificationKey } from 'express-jwt'
-// import { expressJwtSecret } from 'jwks-rsa'
 import { auth0Config } from './auth0Config'
-import * as https from 'https'
-import * as fs from 'fs'
-import { readFileSync } from 'fs'
 import { throwExpression } from './utils'
 import { Logger } from './logger'
+import createProfileRouter from './routes/profileRoutes'
 
 // Cast to int
 const PORT = +(process.env.PORT ?? throwExpression('PORT is undefined in environment variables'))
@@ -27,6 +21,7 @@ wss.on('connection', (ws: WebSocket) => {
 })
 
 const app: Express = express()
+
 app.use(cors())
 app.use(bodyParser.json())
 
@@ -43,54 +38,8 @@ app.get('/', (req: Request, res: Response) => {
     console.log('Express + TypeScript Serverrr')
 })
 
-// Test secure route
-app.get('/api/profile', jwtCheck, (req: Request, res: Response) => {
-    const decoded = jwt.decode(req.headers.authorization?.split(' ')[1] as string)
-    db.getUser(decoded?.sub as string).then(
-        (user) => {
-            res.status(200).send(user)
-        },
-        (err) => {
-            res.status(404).send()
-        },
-    )
-})
-
-app.post('/api/profile', jwtCheck, (req: Request, res: Response) => {
-    const decoded = jwt.decode(req.headers.authorization?.split(' ')[1] as string)
-    const sub = decoded?.sub as string
-    const name = req.body.userName as string
-    db.getUser(sub).then(
-        () => {
-            res.status(400).send('User already exists')
-        },
-        () => {
-            db.addUser(sub, name).then(
-                (user) => {
-                    res.status(201).send(user)
-                },
-                (err) => {
-                    res.status(500).send(err)
-                },
-            )
-        },
-    )
-})
-
-app.put('/api/profile/name', jwtCheck, (req: Request, res: Response) => {
-    Logger.express('put /api/profile/name')
-    const decoded = jwt.decode(req.headers.authorization?.split(' ')[1] as string)
-    const sub = decoded?.sub as string
-    const name = req.body.userName as string
-    db.changeUserName(sub, name).then(
-        (user) => {
-            res.status(200).send(user)
-        },
-        (err) => {
-            res.status(500).send(err)
-        },
-    )
-})
+const profileRouter = createProfileRouter(db)
+app.use('/api/profile', jwtCheck, profileRouter)
 
 db.init().then(() => {
     app.listen(PORT, () => {
