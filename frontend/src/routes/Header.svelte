@@ -4,12 +4,13 @@
 	import auth from '../authService';
 	import { goto } from '$app/navigation';
 	import { fade, fly } from 'svelte/transition';
+	import M from '$lib/images/mm.png'
 
 	// export let auth0Client;
 </script>
 
 <header>
-	<button class='text-button' on:click={() => {goto("/")}}>WSMDS</button>
+	<button class='text-button' on:click={() => {goto("/")}}>WS<img class='header-img' src={M}/>DS</button>
 	{#if $isAuthenticated && $user}
 		{#if $wsmdsUser}
 			<button

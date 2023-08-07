@@ -1,6 +1,8 @@
 header {
   padding: 8px 16px;
-  background: #144b52;
+  //background: #144b52;
+  //background: #061c22;
+  background: #0000004f;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -12,4 +14,16 @@ header {
 
 .user-name {
   margin-left: auto;
+}
+
+header > button {
+  height: 100%;
+  display: flex;
+  padding: 0;
+  align-items: center;
+  font-weight: bold;
+}
+
+.header-img {
+  height: 100%;
 }

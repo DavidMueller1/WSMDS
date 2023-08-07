@@ -1,7 +1,9 @@
 <script lang="ts">
-	let code = '';
+	import InputField from '../components/InputField.svelte';
 
-	const submitCode = () => {
+	let serverErrorVisible = false;
+
+	const submitCode = (code: string) => {
 		console.log('Submitting code:', code);
 	}
 </script>
@@ -12,6 +14,14 @@
 </svelte:head>
 
 <div class='connect-form center-flex'>
-	<input bind:value={code} placeholder='Code'/>
-	<button on:click={submitCode}>Connect</button>
+	<InputField
+		label='Hier kommt ein Code rein'
+		placeholder='Code'
+		maxLength={10}
+		inputErrorText='Bitte gib einen Code ein'
+		otherErrorText='Der Server hat veschissen'
+		otherErrorVisible={serverErrorVisible}
+		submitInput={submitCode}
+		submitInputText='Connect'
+	/>
 </div>

@@ -3,9 +3,10 @@
 	import Modal from '../../components/Modal.svelte';
 	import auth from '../../authService';
 	import { Auth0Client } from '@auth0/auth0-spa-js';
+	import InputField from '../../components/InputField.svelte';
 
 
-	let name = $wsmdsUser.name;
+	// let name = $wsmdsUser.name;
 	let showModal = false;
 
 	let inputErrorVisible = false;
@@ -15,7 +16,7 @@
 		showModal = true;
 	}
 
-	const submitName = () => {
+	const submitName = (name: string) => {
 		// showModal = false;
 		// loading.set(true);
 		// auth.updateUserName($auth0Client, $auth0Token, name).then(() => {
@@ -58,21 +59,33 @@
 </div>
 
 <Modal bind:showModal>
-	<form class='center-flex' on:submit|preventDefault={submitName}>
-		<div>Wie heißt du fortan?</div>
-		<input
-			maxlength='12'
-			bind:value={name}
-			placeholder='Dein Name'
-			on:input={() => inputErrorVisible = false}
-		/>
-		{#if inputErrorVisible}
-			<div class='error-text'>Bitte gib einen Namen ein</div>
-		{:else if serverErrorVisible}
-			<div class='error-text'>Der Server hat veschissen.</div>
-		{/if}
-		<button type='submit'>Name ändern</button>
-	</form>
+	<InputField
+		label='Wie heißt du fortan?'
+		placeholder='Dein Name'
+		maxLength={12}
+		inputErrorText='Bitte gib einen Namen ein'
+		otherErrorText='Der Server hat veschissen'
+		otherErrorVisible={serverErrorVisible}
+		value={$wsmdsUser.name}
+		submitInput={submitName}
+		submitInputText='Name ändern'
+	/>
+
+<!--	<form class='center-flex' on:submit|preventDefault={submitName}>-->
+<!--		<div>Wie heißt du fortan?</div>-->
+<!--		<input-->
+<!--			maxlength='12'-->
+<!--			bind:value={name}-->
+<!--			placeholder='Dein Name'-->
+<!--			on:input={() => inputErrorVisible = false}-->
+<!--		/>-->
+<!--		{#if inputErrorVisible}-->
+<!--			<div class='error-text'>Bitte gib einen Namen ein</div>-->
+<!--		{:else if serverErrorVisible}-->
+<!--			<div class='error-text'>Der Server hat veschissen.</div>-->
+<!--		{/if}-->
+<!--		<button type='submit'>Name ändern</button>-->
+<!--	</form>-->
 <!--	<div>Wie heißt du fortan?</div>-->
 <!--	<input bind:value={name} placeholder='Dein Name'/>-->
 <!--	<button on:click={submitName}>Name ändern</button>-->

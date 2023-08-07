@@ -5,7 +5,7 @@
 	import { auth0Client, auth0Token, isAuthenticated, loading, user, wsmdsUser } from '../store';
 	import { Auth0Client, User } from '@auth0/auth0-spa-js';
 	import { onMount } from 'svelte';
-	import { Circle3 } from 'svelte-loading-spinners';
+	import { Circle3, Chasing, Jumper, Shadow } from 'svelte-loading-spinners';
 	import { initWebSocket } from '../websocketService';
 	import Welcome from './Welcome.svelte';
 
@@ -32,6 +32,8 @@
 		loading.set(true);
 		auth.loginWithPopup($auth0Client, {}).then(() => {
 			loading.set(false);
+		}, () => {
+			loading.set(false);
 		});
 	}
 
@@ -43,12 +45,24 @@
 	<div class='content'>
 		{#if $loading}
 			<span class='loading-spinner'>
-				<Circle3
-					size='100'
-					ballTopLeft='#0083b4'
-					ballTopRight='#df2c45'
-					ballBottomLeft='#892c6b'
-					ballBottomRight='#0a72d4'
+<!--				<Circle3-->
+<!--					size='100'-->
+<!--					ballTopLeft='#0083b4'-->
+<!--					ballTopRight='#df2c45'-->
+<!--					ballBottomLeft='#892c6b'-->
+<!--					ballBottomRight='#0a72d4'-->
+<!--				/>-->
+<!--				<Chasing-->
+<!--					size='70'-->
+<!--					color='white'-->
+<!--				/>-->
+<!--				<Jumper-->
+<!--					size='200'-->
+<!--					color='white'-->
+<!--				/>-->
+				<Shadow
+					size='60'
+					color='white'
 				/>
 			</span>
 		{:else }

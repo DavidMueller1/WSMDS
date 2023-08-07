@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import './Modal.scss';
-	export let showModal; // boolean
+	export let showModal: boolean; // boolean
 
-	let dialog; // HTMLDialogElement
+	let dialog: HTMLDialogElement; // HTMLDialogElement
 
 	$: if (dialog && showModal) dialog.showModal();
 </script>

@@ -16,14 +16,7 @@ export default defineConfig(({ mode }) => {
 				key: fs.readFileSync(`${__dirname}/cert/key.pem`),
 				cert: fs.readFileSync(`${__dirname}/cert/cert.pem`)
 			},
-			proxy: {
-				'/api': {
-					target: env.VITE_API_URL,
-					changeOrigin: true,
-					secure: false,
-					rewrite: (path) => path.replace(/^\/api/, '')
-				}
-			}
+			proxy: {}
 		}
 	};
 });
